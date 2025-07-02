@@ -41,7 +41,7 @@ jobs:
 
     - name: Push Docker image to ECR
       run: |
-        docker push 326061183428.dkr.ecr.us-east-2.amazonaws.com/service-discovery:latest
+        docker push 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
 
     - name: Deploy to Amazon ECS
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
