@@ -37,7 +37,7 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t service-discovery .
-        docker tag service-discovery:latest 326061183428.dkr.ecr.us-east-2.amazonaws.com/service-discovery:latest
+        docker tag service-discovery:latest 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
 
     - name: Push Docker image to ECR
       run: |
