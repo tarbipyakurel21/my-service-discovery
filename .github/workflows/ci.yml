@@ -46,12 +46,12 @@ jobs:
       - name: Register new task definition revision
         run: |
           aws ecs register-task-definition \
-            --family service-discovery-task \
-            --container-definitions "$(aws ecs describe-task-definition --task-definition service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")"
+            --family my-service-discovery-task \
+            --container-definitions "$(aws ecs describe-task-definition --task-definition my-service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")"
 
       - name: Deploy to Amazon ECS via AWS CLI
         run: |
           aws ecs update-service \
             --cluster my-microservices-cluster \
-            --service service-discovery \
-            --task-definition service-discovery-task
+            --service my-service-discovery \
+            --task-definition my-service-discovery-task
