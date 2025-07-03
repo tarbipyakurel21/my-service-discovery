@@ -44,18 +44,15 @@ jobs:
         docker push 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
 
     - name: Register new task definition revision
-      id: register-task
       run: |
-        TASK_DEF_ARN=$(aws ecs register-task-definition \
+        aws ecs register-task-definition \
           --family service-discovery-task \
-          --container-definitions "$(aws ecs describe-task-definition --task-definition service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")" \
-          --query 'taskDefinition.taskDefinitionArn' --output text)
-        echo "task_definition_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+          --container-definitions "$(aws ecs describe-task-definition --task-definition service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")"
 
     - name: Deploy to Amazon ECS
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.register-task.outputs.task_definition_arn }}
+        task-definition: service-discovery-task
         service: service-discovery
         cluster: my-microservices-cluster
         wait-for-service-stability: true
