@@ -53,5 +53,5 @@ jobs:
         run: |
           aws ecs update-service \
             --cluster my-microservices-cluster \
-            --service service-discovery-task-service-njffo0n0
+            --service service-discovery-task-service-njffo0n0 \
             --task-definition my-service-discovery-task
