@@ -11,47 +11,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Build with Maven
-      run: mvn clean package
+      - name: Build with Maven
+        run: mvn clean package
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
-    - name: Log in to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build Docker image
-      run: |
-        docker build -t service-discovery .
-        docker tag service-discovery:latest 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
+      - name: Build Docker image
+        run: |
+          docker build -t service-discovery .
+          docker tag service-discovery:latest 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
 
-    - name: Push Docker image to ECR
-      run: |
-        docker push 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
+      - name: Push Docker image to ECR
+        run: |
+          docker push 326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest
 
-    - name: Register new task definition revision
-      run: |
-        aws ecs register-task-definition \
-          --family service-discovery-task \
-          --container-definitions "$(aws ecs describe-task-definition --task-definition service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")"
+      - name: Register new task definition revision
+        run: |
+          aws ecs register-task-definition \
+            --family service-discovery-task \
+            --container-definitions "$(aws ecs describe-task-definition --task-definition service-discovery-task --query 'taskDefinition.containerDefinitions' --output json | sed "s|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:.*|326061183428.dkr.ecr.us-east-2.amazonaws.com/my-service-discovery:latest|")"
 
-    - name: Deploy to Amazon ECS via AWS CLI
-  run: |
-    aws ecs update-service \
-      --cluster my-microservices-cluster \
-      --service service-discovery \
-      --task-definition service-discovery-task
+      - name: Deploy to Amazon ECS via AWS CLI
+        run: |
+          aws ecs update-service \
+            --cluster my-microservices-cluster \
+            --service service-discovery \
+            --task-definition service-discovery-task
