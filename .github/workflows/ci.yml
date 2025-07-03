@@ -48,6 +48,7 @@ jobs:
         run: |
           TASK_DEF_ARN=$(aws ecs register-task-definition \
             --family my-service-discovery-task \
+            --execution-role-arn arn:aws:iam::326061183428:role/ecsTaskExecutionRole \
             --requires-compatibilities FARGATE \
             --network-mode awsvpc \
             --cpu 512 \
